@@ -25,6 +25,26 @@ banners and scene labels, and the DATE CHECK's COP31 set in bold:
 one judge call misread the 10px regular mention as "GOP31" (every
 source string was verified correct; the small mentions were the
 vulnerable ones).
+
+v4 (the 0.99 push; v3's craft pass scored 0.956 in its ladder duel,
+BELOW v2's 0.969 backtest — its trade-offs did not pay): base is v2
+again, NOT v3. Two duel-evidenced fixes are applied on top. First,
+the bottom band takes v3's brief structure — the 12 strongest
+briefs as full one-liners at 15px, the other 12 as an IN SHORT
+index at 14px — but the space is found by tightening the masthead
+stack, the numbers strip and section gaps, NOT by deleting the
+world map: v3 removed the map and its margins DIPPED, so the map
+stays (212px wide, all 14 numbered pins). Second, a pictorial
+upgrade aimed at the rungs' real edge (big, instantly readable
+scenes): the trio mains get richer scenes — Kyiv gains a river
+with THREE bridge silhouettes and burst hits on each, Akvan gains
+wave bands and rain streaks, the sell-off becomes a bold
+candlestick panel — and every secondary card's busy mini-strip is
+replaced by ONE bold glyph (clock, flags, missile, courthouse,
+bars, flag, plaques, scoreboard, trolley, VI sun, shuttlecock)
+that reads at 300px as a picture, not texture. Same day, same 38
+stories, same facts; the date treatment, DATE CHECK box, source
+labels and status chips are untouched.
 """
 
 from PIL import Image, ImageDraw, ImageFont
@@ -196,33 +216,42 @@ MAINS = [
          chip="REPORTED"),
 ]
 
-# Briefs: (place, text, source-or-None) — numbered 15..38 on the page.
-BRIEFS = [
+# Briefs: (place, text, source-or-None) — numbered 15..38.
+# v4 split (v3 structure, kept): the 12 strongest run as full
+# one-liners at 15px in the ALSO column (stories 15-26); the other
+# 12 run as an IN SHORT index at 14px (stories 27-38). Same 24
+# briefs, same facts — the region tally still counts all 38.
+BRIEFS_FULL = [
     ("Frankfurt", "Eurozone morale improves to \u221216.9.", "Reuters"),
-    ("Ann Arbor", "US sentiment ends November at 51.5.", None),
     ("Ottawa", "Retail sales rose 0.8% in September.", "StatCan"),
+    ("Hormuz", "46 ships wait at anchor; Brent $92.50.", None),
+    ("Mercury", "Cruise ends; orbit entry due Saturday.", "ESA"),
+    ("Seoul", "Ruling party moves to impeach top judge.", "Yonhap"),
+    ("Riyadh", "Saudi Arabia downs missile, five drones.", None),
+    ("London", "1,000 drones pledged to Ukraine, \u00a3260m.", None),
+    ("Washington", "Papers: 879,000 AI chips OK'd for China.", None),
+    ("New York", "S&P falls 3.7%, Nasdaq 5.3% in rout.", "AP"),
+    ("Doha", "India A rout Nepal by 306 runs.", "Cricinfo"),
+    ("Turkana", "Oil drilling starts; crude due 1 Dec.", None),
+    ("Sydney", "Shares fall 1.6% in the sell-off.", "Reuters"),
+]
+
+BRIEFS_SHORT = [
+    ("Ann Arbor", "US sentiment ends November at 51.5.", None),
     ("Berlin", "Producer prices up 8.1% in a year.", None),
     ("London", "GfK confidence steady at \u221222.", "GfK"),
     ("Copenhagen", "GDP grew 0.8% in the third quarter.", None),
-    ("Hormuz", "46 ships wait at anchor; Brent $92.50.", None),
-    ("Mercury", "Cruise ends; orbit entry due Saturday.", "ESA"),
     ("Barcelona", "Daraxonrasib: tumours shrink in 60.7%.", None),
-    ("Seoul", "Ruling party moves to impeach top judge.", "Yonhap"),
     ("Frankfurt", "Lagarde's farewell: \u201cact in time\u201d.", "Reuters"),
     ("Kerch", "Free Kerch\u2013Kavkaz ferries start running.", None),
-    ("Riyadh", "Saudi Arabia downs missile, five drones.", None),
-    ("London", "1,000 drones pledged to Ukraine, \u00a3260m.", None),
     ("Washington", "Trump pardons Pete Rose posthumously.", "AP"),
-    ("Washington", "Papers: 879,000 AI chips OK'd for China.", None),
-    ("New York", "S&P falls 3.7%, Nasdaq 5.3% in rout.", "AP"),
     ("Buenos Aires", "Senate backs disability law, 71\u20130.", None),
-    ("Doha", "India A rout Nepal by 306 runs.", "Cricinfo"),
-    ("Turkana", "Oil drilling starts; crude due 1 Dec.", None),
     ("Brussels", "EU summons Russian envoy over embassy.", None),
     ("Antalya", "Green Zone marks Finance Day at COP31.", None),
-    ("Sydney", "Shares fall 1.6% in the sell-off.", "Reuters"),
     ("Tokyo", "SoftBank closes 14.5% lower.", None),
 ]
+
+BRIEFS = BRIEFS_FULL + BRIEFS_SHORT
 
 DATE_CHECK = (
     "DATE CHECK \u2713  Every story on this page is from Friday 20 "
@@ -287,72 +316,119 @@ def _stamp(d, xy, s, color=RED, size=15):
 
 
 def sc_kyiv(w, h):
-    im = Image.new("RGB", (w, h), (16, 22, 46))
+    im = Image.new("RGB", (w, h), (14, 20, 44))
     d = _d(im)
     _banner(d, w, "KYIV", fill=(176, 32, 28), size=15 if w > 250 else 10,
             align="l")
     import random
     random.seed(20)
-    # skyline
-    base = h * 0.86
-    x = w * 0.03
+    # skyline over a river that carries THREE bridges
+    base = h * 0.60
+    x = w * 0.02
     while x < w * 0.97:
         bw = random.randint(int(w * 0.05), int(w * 0.09))
-        bh = random.randint(int(h * 0.18), int(h * 0.42))
-        d.rectangle([x, base - bh, x + bw, base], fill=(30, 38, 66))
-        for _ in range(3):
+        bh = random.randint(int(h * 0.14), int(h * 0.30))
+        d.rectangle([x, base - bh, x + bw, base], fill=(36, 48, 80))
+        for _ in range(4):
             wx = x + random.randint(2, max(3, int(bw) - 5))
             wy = base - random.randint(3, max(4, int(bh) - 3))
             d.rectangle([wx, wy, wx + 2, wy + 3], fill=(255, 214, 120))
         x += bw + 3
-    # river + bridge
-    d.rectangle([0, base, w, h], fill=(24, 44, 74))
-    by = base - h * 0.02
-    d.line([(w * 0.04, by), (w * 0.96, by)], fill=(200, 205, 215), width=3)
-    for fx in (0.2, 0.5, 0.8):
-        d.line([(w * fx, by), (w * fx, base + h * 0.06)],
-               fill=(200, 205, 215), width=2)
-        d.line([(w * fx, by - h * 0.13), (w * fx, by)],
-               fill=(200, 205, 215), width=2)
-    d.line([(w * 0.2, by - h * 0.13), (w * 0.5, by)],
-           fill=(200, 205, 215), width=1)
-    d.line([(w * 0.8, by - h * 0.13), (w * 0.5, by)],
-           fill=(200, 205, 215), width=1)
-    # missile trails (dashed arcs) + bursts
-    for sx, ex in ((0.55, 0.30), (0.75, 0.52), (0.92, 0.70)):
+    # a domed landmark among the towers
+    dx = w * 0.30
+    d.rectangle([dx - w * 0.035, base - h * 0.26, dx + w * 0.035, base],
+                fill=(36, 48, 80))
+    d.pieslice([dx - w * 0.045, base - h * 0.40, dx + w * 0.045,
+                base - h * 0.12], 180, 360, fill=(54, 68, 104))
+    # river with flow lines
+    d.rectangle([0, base, w, h], fill=(20, 42, 76))
+    for i in range(3):
+        yy = base + h * (0.17 + 0.12 * i)
+        d.line([(w * 0.03, yy), (w * 0.97, yy)], fill=(72, 112, 162),
+               width=1)
+    deck_y = base + h * 0.07
+    top = base - h * 0.16
+
+    def cable_y(t):
+        a = abs(t)
+        if a <= 0.45:
+            return deck_y - (deck_y - top) * (1 - a / 0.45)
+        return top + (deck_y - top) * ((a - 0.45) / 0.55)
+
+    import math
+    for fx in (0.20, 0.51, 0.82):
+        cx = w * fx
+        span = w * 0.15
+        # deck + twin pylons
+        d.line([(cx - span, deck_y), (cx + span, deck_y)],
+               fill=(218, 224, 236), width=4)
+        for px_ in (cx - span * 0.45, cx + span * 0.45):
+            d.line([(px_, deck_y), (px_, top)], fill=(218, 224, 236),
+                   width=3)
+        # main cable runs + hangers
+        d.line([(cx - span, deck_y), (cx - span * 0.45, top)],
+               fill=(190, 198, 214), width=1)
+        d.line([(cx - span * 0.45, top), (cx, deck_y - 1)],
+               fill=(190, 198, 214), width=2)
+        d.line([(cx + span * 0.45, top), (cx, deck_y - 1)],
+               fill=(190, 198, 214), width=2)
+        d.line([(cx + span, deck_y), (cx + span * 0.45, top)],
+               fill=(190, 198, 214), width=1)
+        for t in (-0.85, -0.62, -0.28, -0.10, 0.10, 0.28, 0.62, 0.85):
+            hx = cx + span * t
+            d.line([(hx, cable_y(t)), (hx, deck_y)],
+                   fill=(170, 182, 205), width=1)
+        # the hit: a burst on the deck + a smoke plume
+        for ang in range(0, 360, 45):
+            ln = 11 if ang % 90 == 0 else 8
+            exx = cx + math.cos(math.radians(ang)) * ln
+            eyy = deck_y + math.sin(math.radians(ang)) * ln * 0.8
+            d.line([(cx, deck_y), (exx, eyy)], fill=(255, 150, 70),
+                   width=3)
+        d.ellipse([cx - 4, deck_y - 4, cx + 4, deck_y + 4],
+                  fill=(255, 224, 140))
+        d.ellipse([cx - 9, deck_y - 30, cx + 3, deck_y - 18],
+                  fill=(120, 124, 138, 110))
+        d.ellipse([cx - 2, deck_y - 41, cx + 12, deck_y - 26],
+                  fill=(120, 124, 138, 90))
+    # two incoming trails, dashed arcs onto the outer bridges
+    for sx, ex in ((0.60, 0.205), (0.95, 0.815)):
         pts = []
         for t in range(0, 11):
             tt = t / 10.0
-            px = w * (sx + (ex - sx) * tt)
-            py = h * (0.16 + 0.52 * tt * tt)
-            pts.append((px, py))
+            pts.append((w * (sx + (ex - sx) * tt),
+                        h * (0.15 + 0.48 * tt * tt)))
         for i in range(0, len(pts) - 1, 2):
             d.line([pts[i], pts[i + 1]], fill=(255, 170, 80), width=2)
-        bx, byy = pts[-1]
-        for dx, dy in ((-7, 0), (7, 0), (0, -7), (-5, -5), (5, -5)):
-            d.line([(bx, byy), (bx + dx, byy + dy)], fill=(255, 120, 60),
-                   width=2)
-        d.ellipse([bx - 3, byy - 3, bx + 3, byy + 3], fill=(255, 200, 90))
     _subtag(d, w, h, "3 BRIDGES HIT", fill=(176, 32, 28),
             size=11 if w > 250 else 9)
     return im
 
 
 def sc_akvan(w, h):
-    im = Image.new("RGB", (w, h), (58, 130, 150))
+    im = Image.new("RGB", (w, h), (52, 124, 146))
     d = _d(im)
-    # coast (Odisha) on the left, sea right
-    d.polygon([(0, 0), (w * 0.34, 0), (w * 0.30, h * 0.30),
-               (w * 0.40, h * 0.55), (w * 0.33, h * 0.80),
-               (w * 0.38, h), (0, h)], fill=(214, 196, 150))
+    # a curving coast (Odisha) on the left, sea to the right
+    coast = [(0, 0), (w * 0.30, 0), (w * 0.27, h * 0.18),
+             (w * 0.33, h * 0.36), (w * 0.28, h * 0.52),
+             (w * 0.35, h * 0.68), (w * 0.31, h * 0.84),
+             (w * 0.36, h), (0, h)]
+    d.polygon(coast, fill=(216, 198, 152))
+    d.line(coast[1:], fill=(240, 248, 250), width=2)
     _banner(d, w, "CYCLONE AKVAN", fill=(14, 84, 96),
             size=14 if w > 250 else 9)
-    d.text((w * 0.03, h * 0.30), "ODISHA", font=F(SANS_B, max(7, int(h * 0.09))),
-           fill=(90, 74, 44))
-    d.text((w * 0.03, h * 0.42), "INDIA", font=F(SANS_B, max(7, int(h * 0.09))),
-           fill=(90, 74, 44))
-    # spiral
+    d.text((w * 0.03, h * 0.30), "ODISHA",
+           font=F(SANS_B, max(7, int(h * 0.09))), fill=(90, 74, 44))
+    d.text((w * 0.03, h * 0.42), "INDIA",
+           font=F(SANS_B, max(7, int(h * 0.09))), fill=(90, 74, 44))
+    # wave bands rolling in toward the coast
     import math
+    wx, wy = w * 0.60, h * 0.62
+    for r in (0.10, 0.155, 0.21):
+        rw, rh = w * r, w * r * 0.62
+        d.arc([wx - rw, wy - rh, wx + rw, wy + rh], 95, 265,
+              fill=(235, 246, 248), width=3)
+    # the spiral
     cx, cy = w * 0.68, h * 0.58
     for r in (0.30, 0.22, 0.145, 0.075):
         rw, rh = w * r, h * r * 1.15
@@ -361,50 +437,73 @@ def sc_akvan(w, h):
         d.arc([cx - rw, cy - rh, cx + rw, cy + rh], 200, 130,
               fill=(200, 228, 236), width=max(2, int(h * 0.045)))
     d.ellipse([cx - 4, cy - 4, cx + 4, cy + 4], fill=(240, 248, 250))
+    # rain streaks driven across the sea
+    import random
+    random.seed(11)
+    for _ in range(30):
+        rx = random.uniform(w * 0.32, w * 0.99)
+        ry = random.uniform(h * 0.26, h * 0.97)
+        d.line([(rx, ry), (rx - 3, ry + 8)], fill=(235, 246, 250, 130),
+               width=2)
     # Gopalpur pin
     px, py = w * 0.385, h * 0.60
     d.ellipse([px - 5, py - 5, px + 5, py + 5], fill=RED, outline=WHITE)
-    d.text((px + 8, py), "GOPALPUR", font=F(SANS_B, max(7, int(h * 0.085))),
-           fill=(20, 40, 44), anchor="lm")
-    d.rectangle([w * 0.60, h * 0.27, w * 0.985, h * 0.43], fill=(14, 84, 96))
+    d.text((px + 8, py), "GOPALPUR",
+           font=F(SANS_B, max(7, int(h * 0.085))), fill=(20, 40, 44),
+           anchor="lm")
+    d.rectangle([w * 0.60, h * 0.27, w * 0.985, h * 0.43],
+                fill=(14, 84, 96))
     d.text((w * 0.79, h * 0.35), "LANDFALL \u00b7 8 AM",
-           font=F(SANS_B, max(7, int(h * 0.085))), fill=WHITE, anchor="mm")
+           font=F(SANS_B, max(7, int(h * 0.085))), fill=WHITE,
+           anchor="mm")
     _subtag(d, w, h, "GUSTS 90 KM/H", fill=(14, 84, 96),
             size=11 if w > 250 else 9)
     return im
 
 
 def sc_aisell(w, h):
-    im = Image.new("RGB", (w, h), (14, 18, 34))
+    im = Image.new("RGB", (w, h), (13, 17, 32))
     d = _d(im)
     _banner(d, w, "AI SELL-OFF", fill=(176, 32, 28),
             size=15 if w > 250 else 10, align="l")
-    # falling line chart, left two-thirds
+    # candlesticks: seven fat red candles stepping down, left two-thirds
     gx0, gx1 = w * 0.05, w * 0.60
-    gy0, gy1 = h * 0.30, h * 0.88
     for i in range(4):
-        yy = gy0 + (gy1 - gy0) * i / 3
-        d.line([(gx0, yy), (gx1, yy)], fill=(52, 60, 84), width=1)
-    pts = [(gx0, gy0 + (gy1 - gy0) * 0.05),
-           (gx0 + (gx1 - gx0) * 0.25, gy0 + (gy1 - gy0) * 0.16),
-           (gx0 + (gx1 - gx0) * 0.45, gy0 + (gy1 - gy0) * 0.13),
-           (gx0 + (gx1 - gx0) * 0.65, gy0 + (gy1 - gy0) * 0.48),
-           (gx0 + (gx1 - gx0) * 0.82, gy0 + (gy1 - gy0) * 0.55),
-           (gx1, gy1 - 2)]
-    d.line(pts, fill=(255, 90, 80), width=3)
+        yy = h * (0.32 + 0.18 * i)
+        d.line([(gx0, yy), (gx1, yy)], fill=(48, 56, 80), width=1)
+    closes = [0.42, 0.47, 0.52, 0.58, 0.66, 0.75, 0.86]
+    step = (gx1 - gx0) / len(closes)
+    body_w = step * 0.58
+    prev = 0.36
+    pts = []
+    for i, cl in enumerate(closes):
+        x = gx0 + step * i + step * 0.21
+        oy, cy_ = h * prev, h * cl
+        d.line([(x + body_w / 2, oy - h * 0.03),
+                (x + body_w / 2, cy_ + h * 0.03)],
+               fill=(255, 120, 105), width=2)
+        d.rectangle([x, min(oy, cy_), x + body_w, max(oy, cy_)],
+                    fill=(240, 60, 50))
+        pts.append((x + body_w / 2, cy_))
+        prev = cl
+    d.line(pts, fill=(255, 120, 105), width=2)
     ex, ey = pts[-1]
-    d.polygon([(ex - 4, ey - 8), (ex + 4, ey - 8), (ex, ey + 2)],
-              fill=(255, 90, 80))
-    # index panel, right
+    d.polygon([(ex - 5, ey + 1), (ex + 5, ey + 1), (ex, ey + 9)],
+              fill=(255, 92, 80))
+    # index panel, right: cleaner, with ruled rows
     rows = [("TAIPEI", "-6.2%"), ("SEOUL", "-5.2%"),
             ("TOKYO", "-5.1%"), ("HONG KONG", "-1.9%")]
-    fs = max(7, int(h * 0.105))
-    yy = h * 0.30
-    for name, val in rows:
-        d.text((w * 0.65, yy), name, font=F(SANS_B, fs), fill=(210, 216, 230))
-        d.text((w * 0.97, yy), val, font=F(SANS_B, fs), fill=(255, 90, 80),
-               anchor="ra")
-        yy += h * 0.155
+    fs = max(7, int(h * 0.095))
+    yy = h * 0.285
+    for j, (name, val) in enumerate(rows):
+        d.text((w * 0.645, yy), name, font=F(SANS_B, fs),
+               fill=(210, 216, 230))
+        d.text((w * 0.97, yy), val, font=F(SANS_B, fs),
+               fill=(255, 92, 80), anchor="ra")
+        if j < len(rows) - 1:
+            d.line([(w * 0.645, yy + h * 0.128), (w * 0.97,
+                    yy + h * 0.128)], fill=(48, 56, 80), width=1)
+        yy += h * 0.148
     _subtag(d, w, h, "ASIA, FRIDAY'S CLOSE", fill=(30, 36, 56),
             size=11 if w > 250 else 9)
     return im
@@ -415,25 +514,21 @@ def sc_cop31(w, h):
     d = _d(im)
     _banner(d, w, "COP31: NO DEAL", fill=(16, 62, 48),
             size=12 if w > 200 else 10, align="l")
-    # draft document: one struck-through line says it all
-    dx, dy, dw, dh = w * 0.05, h * 0.44, w * 0.58, h * 0.50
-    d.rectangle([dx, dy, dx + dw, dy + dh], fill=(245, 242, 232))
-    f1 = F(SERIF_B, max(9, int(h * 0.17)))
-    s1 = "FOSSIL FUELS"
-    while d.textlength(s1, font=f1) > dw - 8 and f1.size > 7:
-        f1 = F(SERIF_B, f1.size - 1)
-    d.text((dx + dw / 2, dy + dh * 0.52), s1, font=f1, fill=INK, anchor="mm")
-    sw = d.textlength(s1, font=f1)
-    d.line([(dx + dw / 2 - sw / 2, dy + dh * 0.60),
-            (dx + dw / 2 + sw / 2, dy + dh * 0.42)], fill=RED, width=3)
-    # clock
-    cx, cy, r = w * 0.82, h * 0.52, min(w, h) * 0.20
+    z0, zh = int(h * 0.44), h - int(h * 0.44)
+    # ONE glyph pair: a big clock (time ran out) + a crossed-out draft
+    cx, cy, r = w * 0.26, z0 + zh * 0.52, zh * 0.47
     d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=WHITE, outline=INK,
-              width=2)
-    d.line([(cx, cy), (cx, cy - r * 0.7)], fill=INK, width=2)
-    d.line([(cx, cy), (cx + r * 0.55, cy + r * 0.3)], fill=INK, width=2)
-    _stamp(d, (w * 0.68, h * 0.74), "OVERTIME", color=(255, 210, 90),
-           size=max(8, int(h * 0.10)))
+              width=3)
+    d.line([(cx, cy), (cx, cy - r * 0.62)], fill=INK, width=3)
+    d.line([(cx, cy), (cx + r * 0.50, cy + r * 0.34)], fill=INK, width=3)
+    d.ellipse([cx - 2, cy - 2, cx + 2, cy + 2], fill=INK)
+    dx, dy = w * 0.50, z0 + zh * 0.10
+    dw, dh = w * 0.38, zh * 0.84
+    d.rectangle([dx, dy, dx + dw, dy + dh], fill=(245, 242, 232))
+    d.line([(dx + 3, dy + 3), (dx + dw - 3, dy + dh - 3)], fill=RED,
+           width=3)
+    d.line([(dx + 3, dy + dh - 3), (dx + dw - 3, dy + 3)], fill=RED,
+           width=3)
     return im
 
 
@@ -469,13 +564,13 @@ def sc_ukeu(w, h):
     d = _d(im)
     _banner(d, w, "UK\u2013EU DEAL", fill=(20, 40, 90),
             size=12 if w > 200 else 10, align="l")
-    fh = h * 0.42
-    fy = h * 0.30
-    _flag_uk(d, w * 0.06, fy, w * 0.36, fh)
-    _flag_eu(d, w * 0.58, fy, w * 0.36, fh)
-    d.text((w * 0.50, fy + fh * 0.42), "+", font=F(SERIF_B, int(h * 0.24)),
+    z0, zh = int(h * 0.44), h - int(h * 0.44)
+    fh = zh * 0.86
+    fy = z0 + zh * 0.07
+    _flag_uk(d, w * 0.05, fy, w * 0.36, fh)
+    _flag_eu(d, w * 0.59, fy, w * 0.36, fh)
+    d.text((w * 0.50, fy + fh * 0.46), "+", font=F(SERIF_B, int(zh * 0.95)),
            fill=INK, anchor="mm")
-    _subtag(d, w, h, "AGREED \u00b7 REUTERS", fill=(20, 40, 90), size=9)
     return im
 
 
@@ -484,12 +579,12 @@ def sc_poland(w, h):
     d = _d(im)
     _banner(d, w, "POLAND: MISSILE", fill=(120, 30, 28),
             size=12 if w > 200 else 10, align="l")
-    d.rectangle([0, h * 0.78, w, h], fill=(110, 138, 84))
-    # missile body, nose down into the field
+    d.rectangle([0, h * 0.82, w, h], fill=(110, 138, 84))
+    # ONE glyph: a big missile, nose down into the field
     import math
-    cx, cy = w * 0.58, h * 0.52
+    cx, cy = w * 0.48, h * 0.72
     ang = math.radians(38)
-    L, R = h * 0.52, h * 0.075
+    L, R = h * 0.56, h * 0.105
     dx_, dy_ = math.sin(ang), math.cos(ang)
     tip = (cx + dx_ * L / 2, cy + dy_ * L / 2)
     tail = (cx - dx_ * L / 2, cy - dy_ * L / 2)
@@ -498,15 +593,13 @@ def sc_poland(w, h):
                (tip[0] + px_ * R * 0.5, tip[1] + py_ * R * 0.5),
                (tip[0] - px_ * R * 0.5, tip[1] - py_ * R * 0.5),
                (tail[0] - px_ * R, tail[1] - py_ * R)], fill=(96, 100, 108))
-    d.polygon([(tail[0] + px_ * R * 1.5, tail[1] + py_ * R * 1.5),
-               (tail[0] - px_ * R * 1.5, tail[1] - py_ * R * 1.5),
-               (tail[0] - dx_ * R * 1.6, tail[1] - dy_ * R * 1.6)],
+    d.polygon([(tail[0] + px_ * R * 0.9, tail[1] + py_ * R * 0.9),
+               (tail[0] - px_ * R * 0.9, tail[1] - py_ * R * 0.9),
+               (tail[0] - dx_ * R * 0.6, tail[1] - dy_ * R * 0.6)],
               fill=(150, 40, 36))
-    for dx2, dy2 in ((-9, 2), (9, 2), (0, -8), (-6, -6), (6, -6)):
+    for dx2, dy2 in ((-10, 2), (10, 2), (0, -9), (-7, -7), (7, -7)):
         d.line([(tip[0], tip[1]), (tip[0] + dx2, tip[1] + dy2)],
                fill=(240, 160, 60), width=2)
-    _subtag(d, w, h, "MINISTER SAYS \u00b7 REUTERS", fill=(120, 30, 28),
-            size=9)
     return im
 
 
@@ -515,30 +608,21 @@ def sc_myanmar(w, h):
     d = _d(im)
     _banner(d, w, "MYANMAR: \u201cUNFAIR\u201d", fill=(120, 40, 30),
             size=12 if w > 200 else 9, align="l")
-    # courthouse
-    bx, bw = w * 0.08, w * 0.56
-    by, base = h * 0.34, h * 0.92
-    d.polygon([(bx - 5, by), (bx + bw + 5, by), (bx + bw * 0.5, by - h * 0.12)],
-              fill=(120, 70, 50))
-    d.rectangle([bx, by, bx + bw, base], fill=(206, 198, 182))
+    z0, zh = int(h * 0.44), h - int(h * 0.44)
+    # ONE glyph: a solid courthouse silhouette + a big REJECTED stamp
+    sil = (70, 60, 54)
+    d.polygon([(w * 0.08, z0 + zh * 0.34), (w * 0.64, z0 + zh * 0.34),
+               (w * 0.36, z0 + zh * 0.02)], fill=sil)
+    d.rectangle([w * 0.08, z0 + zh * 0.34, w * 0.64, z0 + zh * 0.42],
+                fill=sil)
     for i in range(4):
-        cx = bx + bw * (0.10 + 0.24 * i)
-        d.rectangle([cx, by + h * 0.06, cx + bw * 0.09, base - h * 0.04],
-                    fill=(240, 236, 226))
-    # scales
-    sx = w * 0.83
-    d.line([(sx, h * 0.34), (sx, h * 0.80)], fill=INK, width=3)
-    d.line([(sx - w * 0.09, h * 0.38), (sx + w * 0.09, h * 0.38)], fill=INK,
-           width=3)
-    for sgn in (-1, 1):
-        px = sx + sgn * w * 0.09
-        d.line([(px, h * 0.38), (px - 7, h * 0.52)], fill=INK, width=2)
-        d.line([(px, h * 0.38), (px + 7, h * 0.52)], fill=INK, width=2)
-        d.arc([px - 10, h * 0.44, px + 10, h * 0.62], 0, 180, fill=INK,
-              width=2)
-    d.rectangle([sx - w * 0.07, h * 0.80, sx + w * 0.07, h * 0.85], fill=INK)
-    _stamp(d, (w * 0.06, 24), "REJECTED",
-           size=max(8, int(h * 0.11)))
+        cx = w * (0.11 + 0.135 * i)
+        d.rectangle([cx, z0 + zh * 0.42, cx + w * 0.075, z0 + zh * 0.88],
+                    fill=sil)
+    d.rectangle([w * 0.06, z0 + zh * 0.88, w * 0.66, z0 + zh * 0.97],
+                fill=sil)
+    _stamp(d, (w * 0.58, z0 + zh * 0.26), "REJECTED",
+           size=max(9, int(zh * 0.52)))
     return im
 
 
@@ -547,21 +631,21 @@ def sc_japan(w, h):
     d = _d(im)
     _banner(d, w, "JAPAN: +2.3%", fill=(176, 32, 28),
             size=12 if w > 200 else 10, align="l")
-    d.ellipse([w * 0.05, h * 0.32, w * 0.28, h * 0.80], fill=(216, 48, 44))
-    # rising bars
-    base = h * 0.90
-    vals = [0.25, 0.38, 0.34, 0.52, 0.68]
-    bw = w * 0.10
-    x = w * 0.46
-    pts = []
-    for i, v in enumerate(vals):
-        d.rectangle([x, base - v * h * 0.55, x + bw * 0.62, base],
-                    fill=(70, 90, 130) if i < 4 else (216, 48, 44))
-        pts.append((x + bw * 0.31, base - v * h * 0.55 - 3))
-        x += bw * 1.15
-    d.line(pts, fill=INK, width=2)
-    d.text((w * 0.335, h * 0.345), "OCTOBER PRICES",
-           font=F(SANS_B, max(8, int(h * 0.11))), fill=MUTED)
+    z0, zh = int(h * 0.44), h - int(h * 0.44)
+    # ONE glyph: the rising-sun disc + three fat ascending bars + arrow
+    cx, cy, r = w * 0.16, z0 + zh * 0.50, zh * 0.38
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(216, 48, 44))
+    base = z0 + zh * 0.96
+    for i, (bx, bh, col) in enumerate(
+            ((0.36, 0.34, (70, 90, 130)), (0.55, 0.58, (70, 90, 130)),
+             (0.74, 0.86, (216, 48, 44)))):
+        d.rectangle([w * bx, base - zh * bh, w * (bx + 0.15), base],
+                    fill=col)
+    ax0, ay0 = w * 0.33, z0 + zh * 0.60
+    ax1, ay1 = w * 0.90, z0 + zh * 0.10
+    d.line([(ax0, ay0), (ax1, ay1)], fill=INK, width=4)
+    d.polygon([(ax1, ay1), (ax1 - 11, ay1 + 1), (ax1 - 2, ay1 + 10)],
+              fill=INK)
     return im
 
 
@@ -570,24 +654,21 @@ def sc_italy(w, h):
     d = _d(im)
     _banner(d, w, "ITALY: STRIKE", fill=(150, 30, 30),
             size=12 if w > 200 else 10, align="l")
-    # crowd: rows of heads + shoulders
-    import random
-    random.seed(4)
-    for row in range(3):
-        yy = h * (0.52 + row * 0.17)
-        for i in range(9):
-            cx = w * (0.07 + i * 0.105) + random.randint(-2, 2)
-            r = h * 0.055
-            d.ellipse([cx - r, yy - r, cx + r, yy + r], fill=(52, 48, 44))
-            d.pieslice([cx - r * 1.7, yy + r * 0.7, cx + r * 1.7,
-                        yy + r * 2.6], 180, 360, fill=(52, 48, 44))
-    # red flag
-    fx = w * 0.68
-    d.line([(fx, h * 0.28), (fx, h * 0.62)], fill=(90, 60, 30), width=3)
-    d.polygon([(fx, h * 0.28), (fx + w * 0.20, h * 0.33),
-               (fx, h * 0.42)], fill=(200, 40, 40))
-    d.text((fx + w * 0.015, h * 0.315), "SCIOPERO",
-           font=F(SANS_B, max(6, int(h * 0.075))), fill=WHITE)
+    z0, zh = int(h * 0.44), h - int(h * 0.44)
+    # ONE glyph: a big red flag over a crowd silhouette band
+    dark = (52, 48, 44)
+    d.rectangle([0, h - zh * 0.16, w, h], fill=dark)
+    for i in range(6):
+        cx = w * (0.08 + i * 0.17)
+        r = zh * 0.20
+        d.ellipse([cx - r, h - zh * 0.16 - r * 1.5, cx + r,
+                   h - zh * 0.16 + r * 0.5], fill=dark)
+    fx = w * 0.64
+    d.line([(fx, z0 - 2), (fx, h - zh * 0.16)], fill=(90, 60, 30),
+           width=4)
+    d.polygon([(fx, z0), (fx + w * 0.31, z0 + zh * 0.10),
+               (fx + w * 0.31, z0 + zh * 0.44), (fx, z0 + zh * 0.34)],
+              fill=(204, 42, 42))
     return im
 
 
@@ -596,21 +677,20 @@ def sc_china(w, h):
     d = _d(im)
     _banner(d, w, "CHINA: RATES HELD", fill=(80, 16, 14),
             size=12 if w > 200 else 9, align="l")
-    pw, ph = w * 0.40, h * 0.44
-    py = h * 0.345
+    z0, zh = int(h * 0.44), h - int(h * 0.44)
+    # the glyph IS the numbers: two big rate plaques
+    pw, ph = w * 0.42, zh * 0.94
+    py = z0 + zh * 0.03
     for i, (lab, val) in enumerate((("1-YEAR LPR", "3.00%"),
                                     ("5-YEAR LPR", "3.50%"))):
-        px = w * (0.06 + i * 0.47)
+        px = w * (0.05 + i * 0.48)
         d.rectangle([px, py, px + pw, py + ph], fill=(245, 240, 226))
-        d.text((px + pw / 2, py + ph * 0.26), lab,
-               font=F(SANS_B, max(8, int(h * 0.11))), fill=(120, 26, 22),
+        d.text((px + pw / 2, py + ph * 0.24), lab,
+               font=F(SANS_B, max(8, int(zh * 0.30))), fill=(120, 26, 22),
                anchor="mm")
-        d.text((px + pw / 2, py + ph * 0.66), val,
-               font=F(SERIF_B, max(9, int(h * 0.20))), fill=INK, anchor="mm")
-    # bottom line as plain centred text: a _subtag box here would
-    # paint over the plaque values above it
-    d.text((w / 2, h - 9), "18TH STRAIGHT HOLD",
-           font=F(SANS_B, 8), fill=(255, 205, 140), anchor="ma")
+        d.text((px + pw / 2, py + ph * 0.68), val,
+               font=F(SERIF_B, max(9, int(zh * 0.54))), fill=INK,
+               anchor="mm")
     return im
 
 
@@ -619,26 +699,20 @@ def sc_cricket(w, h):
     d = _d(im)
     _banner(d, w, "WELLINGTON", fill=(24, 62, 34),
             size=11 if w > 200 else 9, align="l")
-    # scoreboard
-    sx, sy, sw, sh = w * 0.05, h * 0.30, w * 0.56, h * 0.56
-    d.rectangle([sx, sy, sx + sw, sy + sh], fill=(18, 24, 20))
-    d.text((sx + 8, sy + sh * 0.14), "NZ 368",
-           font=F(SANS_B, max(8, int(h * 0.15))), fill=(255, 220, 120))
-    d.text((sx + 8, sy + sh * 0.48), "IND 159/1",
-           font=F(SANS_B, max(8, int(h * 0.15))), fill=(255, 220, 120))
-    d.text((sx + 8, sy + sh * 0.78), "NICHOLLS 175*",
-           font=F(SANS_B, max(6, int(h * 0.10))), fill=(200, 220, 200))
-    # bat + ball
-    bx, by = w * 0.78, h * 0.62
-    d.polygon([(bx - 4, by - h * 0.26), (bx + 5, by - h * 0.26),
-               (bx + 8, by + h * 0.10), (bx - 7, by + h * 0.10)],
-              fill=(226, 200, 150), outline=(120, 96, 60))
-    d.rectangle([bx - 2, by - h * 0.38, bx + 3, by - h * 0.26],
-                fill=(120, 96, 60))
-    d.ellipse([w * 0.86, h * 0.30, w * 0.86 + h * 0.13, h * 0.30 + h * 0.13],
-              fill=(196, 40, 40))
-    d.arc([w * 0.865, h * 0.305, w * 0.855 + h * 0.13, h * 0.295 + h * 0.13],
-          300, 60, fill=WHITE, width=1)
+    z0, zh = int(h * 0.44), h - int(h * 0.44)
+    # ONE glyph pair: a numeral scoreboard + a big ball
+    d.rectangle([w * 0.05, z0 + zh * 0.06, w * 0.56, z0 + zh * 0.94],
+                fill=(18, 24, 20))
+    d.text((w * 0.09, z0 + zh * 0.30), "NZ 368",
+           font=F(SANS_B, max(8, int(zh * 0.46))), fill=(255, 220, 120),
+           anchor="lm")
+    d.text((w * 0.09, z0 + zh * 0.70), "IND 159/1",
+           font=F(SANS_B, max(7, int(zh * 0.32))), fill=(200, 220, 200),
+           anchor="lm")
+    cx, cy, r = w * 0.79, z0 + zh * 0.50, zh * 0.36
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(196, 40, 40))
+    d.arc([cx - r * 0.82, cy - r * 0.82, cx + r * 0.82, cy + r * 0.82],
+          300, 60, fill=WHITE, width=2)
     return im
 
 
@@ -647,61 +721,60 @@ def sc_retail(w, h):
     d = _d(im)
     _banner(d, w, "SALES +0.7%", fill=(40, 80, 60),
             size=11 if w > 200 else 9, align="l")
-    # shop awning + trolley
-    for i in range(6):
-        x0 = w * 0.05 + i * w * 0.11
-        d.polygon([(x0, h * 0.30), (x0 + w * 0.11, h * 0.30),
-                   (x0 + w * 0.09, h * 0.42), (x0 + w * 0.02, h * 0.42)],
+    z0, zh = int(h * 0.44), h - int(h * 0.44)
+    # fat awning stripes
+    for i in range(4):
+        x0 = i * w * 0.25
+        d.polygon([(x0, z0), (x0 + w * 0.25, z0),
+                   (x0 + w * 0.22, z0 + zh * 0.26),
+                   (x0 + w * 0.03, z0 + zh * 0.26)],
                   fill=(200, 60, 50) if i % 2 == 0 else (245, 242, 232))
-    tx, ty = w * 0.16, h * 0.62
-    d.polygon([(tx, ty), (tx + w * 0.30, ty), (tx + w * 0.26, ty + h * 0.16),
-               (tx + w * 0.04, ty + h * 0.16)], outline=INK, width=2)
-    d.line([(tx + w * 0.30, ty), (tx + w * 0.38, ty - h * 0.08)], fill=INK,
-           width=2)
-    for wx in (tx + w * 0.07, tx + w * 0.24):
-        d.ellipse([wx - 4, ty + h * 0.17, wx + 4, ty + h * 0.17 + 8],
-                  fill=INK)
-    d.rectangle([tx + w * 0.05, ty - h * 0.13, tx + w * 0.13, ty],
+    # ONE glyph: a filled trolley silhouette + the figure panel
+    ink2 = (44, 44, 44)
+    d.rectangle([w * 0.20, z0 + zh * 0.30, w * 0.28, z0 + zh * 0.44],
                 fill=(240, 190, 70))
-    d.rectangle([tx + w * 0.15, ty - h * 0.10, tx + w * 0.23, ty],
+    d.rectangle([w * 0.32, z0 + zh * 0.34, w * 0.40, z0 + zh * 0.44],
                 fill=(90, 150, 90))
-    d.rectangle([w * 0.60, h * 0.52, w * 0.95, h * 0.76], fill=(40, 80, 60))
-    d.text((w * 0.775, h * 0.64), "+0.7% OCT",
-           font=F(SANS_B, max(8, int(h * 0.12))), fill=WHITE, anchor="mm")
+    d.polygon([(w * 0.14, z0 + zh * 0.44), (w * 0.50, z0 + zh * 0.44),
+               (w * 0.46, z0 + zh * 0.72), (w * 0.18, z0 + zh * 0.72)],
+              fill=ink2)
+    d.line([(w * 0.50, z0 + zh * 0.44), (w * 0.58, z0 + zh * 0.36)],
+           fill=ink2, width=3)
+    for wx in (w * 0.22, w * 0.42):
+        rr = zh * 0.09
+        d.ellipse([wx - rr, z0 + zh * 0.78, wx + rr, z0 + zh * 0.78 + 2 * rr],
+                  fill=ink2)
+    d.rectangle([w * 0.62, z0 + zh * 0.38, w * 0.96, z0 + zh * 0.86],
+                fill=(40, 80, 60))
+    d.text((w * 0.79, z0 + zh * 0.62), "+0.7%",
+           font=F(SANS_B, max(8, int(zh * 0.40))), fill=WHITE,
+           anchor="mm")
     return im
 
 
 def sc_gtavi(w, h):
     im = Image.new("RGB", (w, h), (58, 26, 92))
     d = _d(im)
-    d.ellipse([w * 0.62, h * 0.12, w * 0.88, h * 0.60], fill=(250, 170, 60))
+    # ONE glyph: a giant VI over a sun-and-skyline silhouette
+    d.ellipse([w * 0.60, h * 0.10, w * 0.90, h * 0.72], fill=(250, 170, 60))
     import random
     random.seed(6)
     x = 0
     while x < w:
-        bwid = random.randint(int(w * 0.05), int(w * 0.10))
-        bh = random.randint(int(h * 0.22), int(h * 0.5))
-        d.rectangle([x, h * 0.86 - bh, x + bwid, h * 0.86], fill=(30, 16, 54))
-        for _ in range(3):
+        bwid = random.randint(int(w * 0.06), int(w * 0.11))
+        bh = random.randint(int(h * 0.20), int(h * 0.42))
+        d.rectangle([x, h * 0.88 - bh, x + bwid, h * 0.88],
+                    fill=(30, 16, 54))
+        for _ in range(2):
             wx = x + random.randint(2, max(3, bwid - 5))
-            wy = h * 0.86 - random.randint(4, max(5, bh - 4))
+            wy = h * 0.88 - random.randint(4, max(5, bh - 4))
             d.rectangle([wx, wy, wx + 2, wy + 3], fill=(255, 220, 120))
         x += bwid + 2
-    d.rectangle([0, h * 0.86, w, h], fill=(22, 12, 40))
-    for px in (w * 0.06, w * 0.94):
-        d.line([(px, h * 0.88), (px + 4, h * 0.54)], fill=(16, 10, 30),
-               width=3)
-        for dx, dy in ((-14, -2), (-6, -8), (4, -9), (13, -4), (16, 3)):
-            d.line([(px + 4, h * 0.54), (px + 4 + dx, h * 0.54 + dy)],
-                   fill=(16, 10, 30), width=2)
-    d.text((w * 0.05, h * 0.08), "VI", font=F(SERIF_B, int(h * 0.40)),
+    d.rectangle([0, h * 0.88, w, h], fill=(22, 12, 40))
+    d.text((w * 0.05, h * 0.14), "VI", font=F(SERIF_B, int(h * 0.58)),
            fill=(255, 120, 190))
-    d.text((w * 0.05, h * 0.50), "VICE CITY",
-           font=F(SANS_B, max(7, int(h * 0.10))), fill=(140, 230, 255))
-    _stamp(d, (w * 0.55, h * 0.68), "$2.36BN",
-           color=(255, 190, 90), size=max(8, int(h * 0.10)))
     d.rectangle([0, 0, w, 15], fill=(20, 10, 36))
-    d.text((8, 7), "DAY TWO", font=F(SANS_B, 9),
+    d.text((8, 7), "DAY-TWO", font=F(SANS_B, 9),
            fill=(255, 190, 90), anchor="lm")
     return im
 
@@ -711,31 +784,27 @@ def sc_badminton(w, h):
     d = _d(im)
     _banner(d, w, "HONG KONG OPEN", fill=(18, 56, 66),
             size=11 if w > 200 else 9, align="l")
-    # court lines
-    d.rectangle([w * 0.06, h * 0.34, w * 0.94, h * 0.92], outline=WHITE,
-                width=2)
-    d.line([(w * 0.50, h * 0.34), (w * 0.50, h * 0.92)], fill=WHITE, width=2)
-    d.line([(w * 0.06, h * 0.63), (w * 0.94, h * 0.63)], fill=WHITE, width=1)
-    # racket
-    cx, cy = w * 0.30, h * 0.58
-    d.ellipse([cx - w * 0.10, cy - h * 0.20, cx + w * 0.10, cy + h * 0.10],
-              outline=WHITE, width=3)
-    for i in range(-2, 3):
-        d.line([(cx + i * w * 0.04, cy - h * 0.19),
-                (cx + i * w * 0.04, cy + h * 0.09)], fill=(200, 220, 225),
-               width=1)
-    d.line([(cx, cy + h * 0.10), (cx + w * 0.07, cy + h * 0.34)],
-           fill=(240, 200, 120), width=4)
-    # shuttlecock in flight
-    sx, sy = w * 0.72, h * 0.44
-    d.polygon([(sx, sy), (sx + w * 0.07, sy - h * 0.10),
-               (sx + w * 0.11, sy - h * 0.02), (sx + w * 0.05, sy + h * 0.05)],
-              fill=WHITE)
-    d.ellipse([sx - 3, sy - 3, sx + 5, sy + 5], fill=(240, 200, 120))
-    for t in (0.3, 0.55, 0.8):
-        d.arc([sx - w * 0.30 * t, sy - h * 0.22 * t, sx + w * 0.05,
-               sy + h * 0.10], 300, 30, fill=(220, 230, 235), width=1)
-    _subtag(d, w, h, "SEN INTO SEMIS", fill=(18, 56, 66), size=9)
+    z0, zh = int(h * 0.44), h - int(h * 0.44)
+    # ONE glyph pair: a thick racket + a big shuttlecock
+    cx, cy = w * 0.27, z0 + zh * 0.46
+    rx, ry = w * 0.115, zh * 0.42
+    d.ellipse([cx - rx, cy - ry, cx + rx, cy + ry], outline=WHITE, width=4)
+    for i in (-1, 0, 1):
+        d.line([(cx + i * rx * 0.45, cy - ry * 0.9),
+                (cx + i * rx * 0.45, cy + ry * 0.9)],
+               fill=(200, 220, 225), width=1)
+    d.line([(cx, cy + ry), (w * 0.37, h - 1)], fill=(240, 200, 120),
+           width=4)
+    sx, sy = w * 0.68, z0 + zh * 0.58
+    for i in range(5):
+        ex = sx - w * 0.20 + i * w * 0.05
+        ey = z0 + zh * 0.04 + (i % 2) * zh * 0.05
+        d.line([(sx - w * 0.02, sy - zh * 0.08), (ex, ey)], fill=WHITE,
+               width=3)
+    d.line([(sx - w * 0.20, z0 + zh * 0.04), (sx, z0 + zh * 0.09)],
+           fill=WHITE, width=2)
+    d.ellipse([sx - w * 0.045, sy - zh * 0.13, sx + w * 0.045,
+               sy + zh * 0.13], fill=(240, 200, 120))
     return im
 
 
@@ -847,9 +916,9 @@ def draw_map(x, y, w):
         dr.polygon([(px(lon), py(lat)) for lon, lat in poly], fill=land)
     for num, lon, lat in PINS:
         cx, cy = px(lon), py(lat)
-        dr.ellipse([cx - 7, cy - 7, cx + 7, cy + 7], fill=RED,
+        dr.ellipse([cx - 6, cy - 6, cx + 6, cy + 6], fill=RED,
                    outline=WHITE, width=1)
-        dr.text((cx, cy - 1), str(num), font=F(SANS_B, 8 if num < 10 else 7),
+        dr.text((cx, cy - 1), str(num), font=F(SANS_B, 7 if num < 10 else 6),
                 fill=WHITE, anchor="mm")
 
 
@@ -909,7 +978,7 @@ def draw_card(x, y, w, h, main, large, medium_tight=False):
     cy += 2
     # deck
     if large:
-        dsize, dlh, maxd = 13, 15, 3
+        dsize, dlh, maxd = 13, 14, 3
     elif medium_tight:
         dsize, dlh, maxd = 12, 13, 2
     else:
@@ -930,34 +999,34 @@ def draw_card(x, y, w, h, main, large, medium_tight=False):
 def build():
     # ---- masthead first (its strip would erase anything under it)
     mast = "Friday 20 November 2026"
-    msize = 98
+    msize = 90
     mf = F(LIB_B, msize)
     strip = Image.new("RGB", (int(tw(mast, mf)) + 8, int(msize * 1.3)),
                       PAPER)
     sd = ImageDraw.Draw(strip)
     sd.text((4, 0), mast, font=mf, fill=INK)
     strip = strip.resize((CW, int(msize * 1.3)), Image.LANCZOS)
-    img.paste(strip, (MX, 18))
+    img.paste(strip, (MX, 6))
     print("masthead size:", msize)
 
     # ---- kicker
-    text(MX, 7, "THE WORLD IN ONE DAY", F(SANS_B, 13), fill=RED)
+    text(MX, 4, "THE WORLD IN ONE DAY", F(SANS_B, 13), fill=RED)
     kick_r = "38 STORIES \u00b7 7 REGIONS \u00b7 ALL FROM THIS ONE DAY"
-    text(W - MX, 8, kick_r, F(SANS_SB, 12), anchor="ra")
+    text(W - MX, 5, kick_r, F(SANS_SB, 12), anchor="ra")
 
     # ---- strapline
     strap = ("Kyiv bridges hit \u00b7 Cyclone Akvan strikes India "
              "\u00b7 An AI sell-off sinks Asia's markets \u00b7 "
              "COP31 ends its last day with no deal")
     ssize = fit_size(strap, SERIF_I, CW, 21, 13)
-    text(MX, 128, strap, F(SERIF_I, ssize), fill=RED)
-    hline(MX, W - MX, 150, fill=INK, width=2)
+    text(MX, 110, strap, F(SERIF_I, ssize), fill=RED)
+    hline(MX, W - MX, 131, fill=INK, width=2)
 
     # ---- region bar
     total = sum(c for _, c, _ in REGIONS)
     assert total == len(MAINS) + len(BRIEFS), (total, len(BRIEFS))
     bx = MX
-    by, bh = 155, 21
+    by, bh = 136, 17
     for name, count, col in REGIONS:
         seg = CW * count / total
         dr.rectangle([bx, by, bx + seg - 1, by + bh], fill=col)
@@ -973,88 +1042,113 @@ def build():
         if not placed:
             # tiny segment (AFRICA 1): stack name over count at 7px
             lf = F(SANS_B, 7)
-            dr.text((bx + seg / 2, by + 4), name, font=lf, fill=WHITE,
+            dr.text((bx + seg / 2, by + 2), name, font=lf, fill=WHITE,
                     anchor="ma")
-            dr.text((bx + seg / 2, by + 11), str(count), font=lf,
+            dr.text((bx + seg / 2, by + 9), str(count), font=lf,
                     fill=WHITE, anchor="ma")
         bx += seg
 
     # ---- numbers strip
-    hline(MX, W - MX, 180, fill=BORDER, width=1)
+    hline(MX, W - MX, 157, fill=BORDER, width=1)
     cellw = CW / 6.0
     for i, (num, cap) in enumerate(NUMBERS):
         cx = MX + i * cellw
-        text(cx + 2, 184, num, F(SERIF_B, 25))
+        text(cx + 2, 161, num, F(SERIF_B, 24))
         cl = wrap(cap, F(SANS, 11), cellw - 10)
-        yy = 212
+        yy = 188
         for ln in cl[:2]:
             dr.text((cx + 2, yy), ln, font=F(SANS, 11), fill=MUTED)
             yy += 12
         if i:
-            dr.line([(cx - 5, 186), (cx - 5, 233)], fill=BORDER, width=1)
-    hline(MX, W - MX, 238, fill=BORDER, width=1)
+            dr.line([(cx - 5, 163), (cx - 5, 210)], fill=BORDER, width=1)
+    hline(MX, W - MX, 215, fill=BORDER, width=1)
 
     # ---- large cards
     lw = int((CW - 16) / 3)
     for i, main in enumerate(MAINS[:3]):
-        draw_card(MX + i * (lw + 8), 244, lw, 266, main, large=True)
+        draw_card(MX + i * (lw + 8), 221, lw, 262, main, large=True)
     # ---- medium cards, row A: five
     mw = int((CW - 36) / 5)
     for c in range(5):
         main = MAINS[3 + c]
-        draw_card(MX + c * (mw + 9), 516, mw, 134, main, large=False)
+        draw_card(MX + c * (mw + 9), 487, mw, 134, main, large=False)
     # ---- medium cards, row B: six (tighter)
     tw6 = 159
     step = (CW - tw6) / 5.0
     for c in range(6):
         main = MAINS[8 + c]
-        draw_card(int(MX + c * step), 656, tw6, 128, main, large=False,
+        draw_card(int(MX + c * step), 625, tw6, 128, main, large=False,
                   medium_tight=True)
 
-    # ---- map panel
-    text(MX, 790, "WHERE IT HAPPENED", F(SANS_B, 12), fill=RED)
-    draw_map(MX + 2, 806, 300)
-    text(MX, 934, "Red numbers mark stories 1\u201314. Positions approximate.",
-         F(SANS, 9), fill=MUTED)
+    # ---- bottom band: map (left) + ALSO one-liners + IN SHORT index
+    # v4: the map STAYS (212px wide, all 14 numbered pins — v3 deleted
+    # it and its duel margins dipped). The brief columns take v3's
+    # structure at v3's sizes (15px one-liners / 14px index); the
+    # space is paid for by the tightened masthead stack, numbers
+    # strip and section gaps above, not by the map.
+    hline(MX, W - MX, 757, fill=BORDER, width=1)
+    text(MX, 761, "WHERE IT HAPPENED", F(SANS_B, 11), fill=RED)
+    draw_map(MX + 2, 784, 212)
+    text(MX, 876, "Red numbers mark stories 1–14.", F(SANS, 9),
+         fill=MUTED)
+    text(MX, 887, "Positions approximate.", F(SANS, 9), fill=MUTED)
+    # chip legend under the map (the apparatus, explained in place)
+    for i, (chip, note) in enumerate(
+            (("REPORTED", "named source, checked"),
+             ("ESTIMATE", "a projection, flagged"))):
+        ly = 908 + i * 18
+        cf = F(SANS_B, 8)
+        cw2 = tw(chip, cf) + 10
+        dr.rectangle([MX, ly, MX + cw2, ly + 12],
+                     fill=CHIP_COLOURS[chip])
+        dr.text((MX + cw2 / 2, ly + 6), chip, font=cf, fill=WHITE,
+                anchor="mm")
+        dr.text((MX + cw2 + 7, ly + 6), note, font=F(SANS, 9),
+                fill=MUTED, anchor="lm")
 
-    # ---- ALSO briefs
-    ax = 362
-    text(ax, 786, "ALSO ON FRIDAY 20 NOVEMBER 2026", F(SERIF_B, 14),
-         fill=RED)
-    text(W - MX, 789, "status chips: green reported \u00b7 purple "
-         "estimate", F(SERIF_I, 10), fill=MUTED, anchor="ra")
-    col_w, col_gap = 318, 12
-    bf_num, bf_place, bf_text = F(SANS_B, 10), F(SERIF_B, 12), F(SERIF, 12)
-    bf_src = F(SERIF_I, 12)
-    lead = 13.2
-    half = (len(BRIEFS) + 1) // 2
-    for idx, (place, body, src) in enumerate(BRIEFS):
-        col = 0 if idx < half else 1
-        row = idx if idx < half else idx - half
-        x = ax + col * (col_w + col_gap)
-        y = 806 + row * lead
-        num = len(MAINS) + 1 + idx
-        dr.text((x, y), str(num), font=bf_num, fill=RED)
-        x2 = x + tw(str(num), bf_num) + 5
-        dr.text((x2, y), place, font=bf_place, fill=INK)
-        x2 += tw(place, bf_place)
-        rest = " \u2014 " + body
-        dr.text((x2, y), rest, font=bf_text, fill=(46, 42, 36))
-        x2 += tw(rest, bf_text)
+    def brief_line(x, y, num, place, body, src, f_num, f_place,
+                   f_text, f_src, max_w, label):
+        dr.text((x, y), str(num), font=f_num, fill=RED)
+        x2 = x + tw(str(num), f_num) + 5
+        dr.text((x2, y), place, font=f_place, fill=INK)
+        x2 += tw(place, f_place)
+        rest = " — " + body
+        dr.text((x2, y), rest, font=f_text, fill=(46, 42, 36))
+        x2 += tw(rest, f_text)
         if src:
             s = " " + src
-            dr.text((x2, y), s, font=bf_src, fill=MUTED)
-            x2 += tw(s, bf_src)
-        if x2 - (ax + col * (col_w + col_gap)) > col_w:
+            dr.text((x2, y), s, font=f_src, fill=MUTED)
+            x2 += tw(s, f_src)
+        if x2 - x > max_w:
             WARNINGS.append(
-                f"brief {num} too wide: "
-                f"{x2 - (ax + col * (col_w + col_gap)):.0f} > {col_w}")
+                f"{label} {num} too wide: {x2 - x:.0f} > {max_w}")
+
+    # left text column: the twelve strongest, full one-liners at 15px
+    text(244, 760, "ALSO ON FRIDAY 20 NOVEMBER 2026", F(SERIF_B, 15),
+         fill=RED)
+    b_num, b_place = F(SANS_B, 12), F(SERIF_B, 15)
+    b_text, b_src = F(SERIF, 15), F(SERIF_I, 14)
+    for idx, (place, body, src) in enumerate(BRIEFS_FULL):
+        num = len(MAINS) + 1 + idx
+        brief_line(244, 784 + idx * 15.0, num, place, body, src,
+                   b_num, b_place, b_text, b_src, 384, "brief")
+    dr.line([(640, 784), (640, 958)], fill=BORDER, width=1)
+    # right text column: the other twelve, as an index at 14px
+    text(650, 761, "IN SHORT — THE REST OF FRIDAY", F(SERIF_B, 14),
+         fill=RED)
+    s_num, s_place = F(SANS_B, 11), F(SERIF_B, 14)
+    s_text, s_src = F(SERIF, 14), F(SERIF_I, 13)
+    for idx, (place, body, src) in enumerate(BRIEFS_SHORT):
+        num = len(MAINS) + len(BRIEFS_FULL) + 1 + idx
+        brief_line(650, 784 + idx * 14.6, num, place, body, src,
+                   s_num, s_place, s_text, s_src, 360, "short brief")
+
 
     # ---- date check box
-    dr.rectangle([MX, 966, W - MX, 1006], fill=(250, 244, 230),
+    dr.rectangle([MX, 973, W - MX, 1009], fill=(250, 244, 230),
                  outline=RED, width=2)
     words = DATE_CHECK.split()
-    dx, dy = MX + 10, 970
+    dx, dy = MX + 10, 976
     maxx = W - MX - 10
     for i, w_ in enumerate(words):
         if i < 2:
@@ -1067,14 +1161,14 @@ def build():
         ww = tw(w_, fnt) + 4
         if dx + ww > maxx:
             dx = MX + 10
-            dy += 12
+            dy += 11
         dr.text((dx, dy), w_, font=fnt, fill=colr)
         dx += ww
-    if dy + 12 > 1006:
-        WARNINGS.append(f"date check overflows box: bottom {dy + 12}")
+    if dy + 11 > 1009:
+        WARNINGS.append(f"date check overflows box: bottom {dy + 11}")
 
     # ---- colophon
-    text(W / 2, 1010, COLOPHON, F(SANS, 9), fill=MUTED, anchor="ma")
+    text(W / 2, 1012, COLOPHON, F(SANS, 9), fill=MUTED, anchor="ma")
 
     # ---- integrity assertions
     corpus = " ".join(
